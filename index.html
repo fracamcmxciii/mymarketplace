@@ -5,36 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mio Marketplace</title>
     <style>
-        /* BASE */
-        body { font-family: sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }
-        
-        /* HEADER */
-        header { background: white; padding: 20px; border-bottom: 1px solid #ddd; position: sticky; top: 0; }
+        body { font-family: sans-serif; background-color: #f0f2f5; margin: 0; }
+        header { background: white; padding: 20px; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; }
         .nav-container { max-width: 800px; margin: auto; }
-        .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
-        
-        /* BOTTONI E INPUT */
+        #searchBar { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .filters { display: flex; gap: 10px; flex-wrap: wrap; }
         .btn-filter { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; background: #e4e6eb; font-weight: bold; }
         .btn-filter.active { background: #1877f2; color: white; }
-        #searchBar { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
-
-        /* ANNUNCI */
         .container { max-width: 800px; margin: 20px auto; padding: 0 10px; }
-        .post { 
-            background: white; border-radius: 10px; margin-bottom: 20px; padding: 15px;
-            display: flex; justify-content: space-between; align-items: flex-start;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
+        .post { background: white; border-radius: 10px; margin-bottom: 20px; padding: 15px; display: flex; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .info { flex: 1; padding-right: 15px; }
-        .prezzo { color: green; font-size: 1.2em; font-weight: bold; }
-        .misure { color: #666; font-size: 0.9em; margin: 5px 0; }
-        
         .immagine img { width: 150px; height: 150px; object-fit: cover; border-radius: 8px; }
-
-        @media (max-width: 600px) {
-            .post { flex-direction: column-reverse; }
-            .immagine img { width: 100%; height: auto; }
-        }
+        @media (max-width: 600px) { .post { flex-direction: column-reverse; } .immagine img { width: 100%; height: auto; } }
     </style>
 </head>
 <body>
@@ -42,22 +24,20 @@
 <header>
     <div class="nav-container">
         <h1 style="color: #1877f2; margin: 0 0 10px 0;">Marketplace</h1>
-        <input type="text" id="searchBar" placeholder="Cerca un articolo..." oninput="filtra()">
+        <input type="text" id="searchBar" placeholder="Cerca un articolo...">
         <div class="filters">
-            <button class="btn-filter active" onclick="cambiaCategoria('TUTTO', this)">TUTTO</button>
-            <button class="btn-filter" onclick="cambiaCategoria('ARREDAMENTO', this)">ARREDAMENTO</button>
-            <button class="btn-filter" onclick="cambiaCategoria('ELETTRONICA', this)">ELETTRONICA</button>
-            <button class="btn-filter" onclick="cambiaCategoria('STRUMENTI', this)">STRUMENTI</button>
-            <button class="btn-filter" onclick="cambiaCategoria('ALTRO', this)">ALTRO</button>
+            <button class="btn-filter active" data-cat="TUTTO">TUTTO</button>
+            <button class="btn-filter" data-cat="ARREDAMENTO">ARREDAMENTO</button>
+            <button class="btn-filter" data-cat="ELETTRONICA">ELETTRONICA</button>
+            <button class="btn-filter" data-cat="STRUMENTI">STRUMENTI</button>
+            <button class="btn-filter" data-cat="ALTRO">ALTRO</button>
         </div>
     </div>
 </header>
 
-<div class="container" id="listaAnnunci">
-    </div>
+<div class="container" id="listaAnnunci"></div>
 
 <script>
-    // 1. I TUOI DATI
     const articoli = [
         {
             nome: "Tavolo in Legno Massiccio",
@@ -74,74 +54,50 @@
             misure: "6.7 pollici",
             descrizione: "Smartphone ultima generazione, nero lucido.",
             immagine: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400"
-        },
-        {
-            nome: "Chitarra Classica",
-            categoria: "STRUMENTI",
-            prezzo: "80€",
-            misure: "Standard",
-            descrizione: "Ottima per iniziare a suonare.",
-            immagine: "https://images.unsplash.com/photo-1510915363646-e9250dfb6d41?w=400"
         }
     ];
 
     let categoriaSelezionata = "TUTTO";
 
-    // 2. FUNZIONE PER DISEGNARE LA PAGINA
     function render() {
         const display = document.getElementById('listaAnnunci');
         const ricerca = document.getElementById('searchBar').value.toLowerCase();
-        
-        let contenutoVuoto = "";
+        let html = "";
 
-        articoli.forEach(prodotto => {
-            const nomeInMinuscolo = prodotto.nome.toLowerCase();
-            const categoriaInMinuscolo = prodotto.categoria;
-
-            // Logica del filtro
-            const passaRicerca = nomeInMinuscolo.includes(ricerca);
-            const passaCategoria = (categoriaSelezionata === "TUTTO" || categoriaSelezionata === categoriaInMinuscolo);
-
-            if (passaRicerca && passaCategoria) {
-                contenutoVuoto += `
+        articoli.forEach(p => {
+            if ((categoriaSelezionata === "TUTTO" || p.categoria === categoriaSelezionata) && 
+                p.nome.toLowerCase().includes(ricerca)) {
+                html += `
                     <div class="post">
                         <div class="info">
-                            <small>${prodotto.categoria}</small>
-                            <h2 style="margin: 5px 0;">${prodotto.nome}</h2>
-                            <div class="prezzo">${prodotto.prezzo}</div>
-                            <div class="misure"><strong>Misure:</strong> ${prodotto.misure}</div>
-                            <p>${prodotto.descrizione}</p>
+                            <small>${p.categoria}</small>
+                            <h2 style="margin:5px 0">${p.nome}</h2>
+                            <div style="color:green; font-weight:bold">${p.prezzo}</div>
+                            <div style="font-size:0.9em; color:#666">Misure: ${p.misure}</div>
+                            <p>${p.descrizione}</p>
                         </div>
-                        <div class="immagine">
-                            <img src="${prodotto.immagine}" alt="prodotto">
-                        </div>
-                    </div>
-                `;
+                        <div class="immagine"><img src="${p.immagine}"></div>
+                    </div>`;
             }
         });
-
-        display.innerHTML = contenutoVuoto || "<p>Nessun risultato trovato.</p>";
+        display.innerHTML = html || "<p>Nessun risultato.</p>";
     }
 
-    // 3. FUNZIONE PER I BOTTONI
-    function cambiaCategoria(cat, elemento) {
-        categoriaSelezionata = cat;
-        
-        // Colora il bottone cliccato
-        const bottoni = document.getElementsByClassName('btn-filter');
-        for (let b of bottoni) { b.classList.remove('active'); }
-        elemento.classList.add('active');
-        
+    // Questo comando assicura che il codice parta solo quando la pagina è caricata
+    document.addEventListener("DOMContentLoaded", () => {
         render();
-    }
 
-    function filtra() {
-        render();
-    }
+        document.getElementById('searchBar').addEventListener('input', render);
 
-    // 4. AVVIO AUTOMATICO
-    render();
+        document.querySelectorAll('.btn-filter').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                categoriaSelezionata = this.getAttribute('data-cat');
+                render();
+            });
+        });
+    });
 </script>
-
 </body>
 </html>
