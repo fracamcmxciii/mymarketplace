@@ -3,50 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mio Marketplace - Facebook Style</title>
+    <title>MINIMARKETplace</title>
     <style>
-        /* STILE GENERALE */
-        body { font-family: Segoe UI, Helvetica, Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }
+        /* BASE */
+        body { font-family: sans-serif; background-color: #f0f2f5; margin: 0; padding: 0; }
         
         /* HEADER */
-        header { background: white; padding: 15px 20px; border-bottom: 1px solid #ddd; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .nav-container { max-width: 1000px; margin: auto; }
-        h1 { color: #1877f2; margin: 0 0 15px 0; font-size: 24px; }
+        header { background: white; padding: 20px; border-bottom: 1px solid #ddd; position: sticky; top: 0; }
+        .nav-container { max-width: 800px; margin: auto; }
+        .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
         
-        .search-row { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-        input[type="text"] { padding: 10px 15px; border-radius: 20px; border: 1px solid #ddd; flex-grow: 1; background: #f0f2f5; outline: none; }
+        /* BOTTONI E INPUT */
+        .btn-filter { padding: 8px 12px; border: none; border-radius: 5px; cursor: pointer; background: #e4e6eb; font-weight: bold; }
+        .btn-filter.active { background: #1877f2; color: white; }
+        #searchBar { width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd; }
 
-        .filters { display: flex; gap: 8px; flex-wrap: wrap; }
-        button { padding: 8px 16px; border: none; border-radius: 18px; cursor: pointer; background: #e4e6eb; font-weight: 600; font-size: 13px; transition: 0.3s; }
-        button:hover { background: #d8dadf; }
-        button.active { background: #1877f2; color: white; }
-
-        /* LISTA ANNUNCI */
-        .container { max-width: 900px; margin: 20px auto; padding: 0 15px; }
-        
+        /* ANNUNCI */
+        .container { max-width: 800px; margin: 20px auto; padding: 0 10px; }
         .post { 
-            background: white; border-radius: 10px; margin-bottom: 16px; padding: 20px;
+            background: white; border-radius: 10px; margin-bottom: 20px; padding: 15px;
             display: flex; justify-content: space-between; align-items: flex-start;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1); transition: transform 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
-        .post:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-
-        /* CONTENUTI A SINISTRA */
-        .info-sinistra { flex: 1; padding-right: 20px; }
-        .categoria { color: #65676b; font-size: 12px; font-weight: bold; letter-spacing: 0.5px; }
-        .titolo-post { margin: 8px 0; color: #1c1e21; font-size: 20px; }
-        .prezzo { color: #1d9221; font-weight: 700; font-size: 1.3em; margin-bottom: 10px; }
-        .misure { font-size: 14px; color: #555; background: #f0f2f5; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; }
-        .descrizione { color: #4b4b4b; line-height: 1.5; font-size: 15px; }
+        .info { flex: 1; padding-right: 15px; }
+        .prezzo { color: green; font-size: 1.2em; font-weight: bold; }
+        .misure { color: #666; font-size: 0.9em; margin: 5px 0; }
         
-        /* IMMAGINE A DESTRA */
-        .immagine-destra img { width: 180px; height: 180px; object-fit: cover; border-radius: 8px; border: 1px solid #eee; }
+        .immagine img { width: 150px; height: 150px; object-fit: cover; border-radius: 8px; }
 
-        /* RESPONSIVE PER CELLULARI */
         @media (max-width: 600px) {
             .post { flex-direction: column-reverse; }
-            .immagine-destra img { width: 100%; height: 250px; margin-bottom: 15px; }
-            .info-sinistra { padding-right: 0; }
+            .immagine img { width: 100%; height: auto; }
         }
     </style>
 </head>
@@ -54,16 +41,14 @@
 
 <header>
     <div class="nav-container">
-        <h1>Marketplace</h1>
-        <div class="search-row">
-            <input type="text" id="searchBar" placeholder="Cerca un articolo per nome..." onkeyup="filtra()">
-        </div>
+        <h1 style="color: #1877f2; margin: 0 0 10px 0;">Marketplace</h1>
+        <input type="text" id="searchBar" placeholder="Cerca un articolo..." oninput="filtra()">
         <div class="filters">
-            <button class="btn-filter active" onclick="filtraCategoria('TUTTO', this)">TUTTO</button>
-            <button class="btn-filter" onclick="filtraCategoria('ARREDAMENTO', this)">ARREDAMENTO</button>
-            <button class="btn-filter" onclick="filtraCategoria('ELETTRONICA', this)">ELETTRONICA</button>
-            <button class="btn-filter" onclick="filtraCategoria('STRUMENTI', this)">STRUMENTI</button>
-            <button class="btn-filter" onclick="filtraCategoria('ALTRO', this)">ALTRO</button>
+            <button class="btn-filter active" onclick="cambiaCategoria('TUTTO', this)">TUTTO</button>
+            <button class="btn-filter" onclick="cambiaCategoria('ARREDAMENTO', this)">ARREDAMENTO</button>
+            <button class="btn-filter" onclick="cambiaCategoria('ELETTRONICA', this)">ELETTRONICA</button>
+            <button class="btn-filter" onclick="cambiaCategoria('STRUMENTI', this)">STRUMENTI</button>
+            <button class="btn-filter" onclick="cambiaCategoria('ALTRO', this)">ALTRO</button>
         </div>
     </div>
 </header>
@@ -72,51 +57,91 @@
     </div>
 
 <script>
-    // --- DATABASE ARTICOLI ---
-    // Per aggiungere un articolo, copia un blocco tra graffe { } e modificalo.
+    // 1. I TUOI DATI
     const articoli = [
         {
             nome: "Tavolo in Legno Massiccio",
             categoria: "ARREDAMENTO",
             prezzo: "350€",
-            misure: "180cm x 90cm x 75cm",
-            descrizione: "Bellissimo tavolo da pranzo in rovere naturale. Superficie trattata antigraffio, ideale per 6-8 persone. Ottime condizioni, vendo per trasloco.",
+            misure: "180x90 cm",
+            descrizione: "Tavolo robusto, perfetto per la sala da pranzo.",
             immagine: "https://images.unsplash.com/photo-1530018607912-eff2df114f11?w=400"
         },
         {
             nome: "Smartphone ProX",
             categoria: "ELETTRONICA",
             prezzo: "500€",
-            misure: "Schermo 6.7 pollici",
-            descrizione: "Telefono con tripla fotocamera, 128GB di memoria, colore nero lucido. Batteria al 100%.",
+            misure: "6.7 pollici",
+            descrizione: "Smartphone ultima generazione, nero lucido.",
             immagine: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=400"
         },
         {
-            nome: "Chitarra Acustica",
+            nome: "Chitarra Classica",
             categoria: "STRUMENTI",
-            prezzo: "120€",
-            misure: "Taglia 4/4 standard",
-            descrizione: "Ottima per principianti, corde nuove appena cambiate. Inclusa custodia morbida.",
+            prezzo: "80€",
+            misure: "Standard",
+            descrizione: "Ottima per iniziare a suonare.",
             immagine: "https://images.unsplash.com/photo-1510915363646-e9250dfb6d41?w=400"
         }
     ];
 
-    let categoriaAttuale = 'TUTTO';
+    let categoriaSelezionata = "TUTTO";
 
-    // Funzione per stampare gli articoli nella pagina
-    function render(lista) {
-        const container = document.getElementById('listaAnnunci');
-        container.innerHTML = ''; 
+    // 2. FUNZIONE PER DISEGNARE LA PAGINA
+    function render() {
+        const display = document.getElementById('listaAnnunci');
+        const ricerca = document.getElementById('searchBar').value.toLowerCase();
+        
+        let contenutoVuoto = "";
 
-        lista.forEach(item => {
-            container.innerHTML += `
-                <div class="post">
-                    <div class="info-sinistra">
-                        <span class="categoria">${item.categoria}</span>
-                        <h2 class="titolo-post">${item.nome}</h2>
-                        <div class="prezzo">${item.prezzo}</div>
-                        <div class="misure">📐 ${item.misure}</div>
-                        <p class="descrizione">${item.descrizione}</p>
+        articoli.forEach(prodotto => {
+            const nomeInMinuscolo = prodotto.nome.toLowerCase();
+            const categoriaInMinuscolo = prodotto.categoria;
+
+            // Logica del filtro
+            const passaRicerca = nomeInMinuscolo.includes(ricerca);
+            const passaCategoria = (categoriaSelezionata === "TUTTO" || categoriaSelezionata === categoriaInMinuscolo);
+
+            if (passaRicerca && passaCategoria) {
+                contenutoVuoto += `
+                    <div class="post">
+                        <div class="info">
+                            <small>${prodotto.categoria}</small>
+                            <h2 style="margin: 5px 0;">${prodotto.nome}</h2>
+                            <div class="prezzo">${prodotto.prezzo}</div>
+                            <div class="misure"><strong>Misure:</strong> ${prodotto.misure}</div>
+                            <p>${prodotto.descrizione}</p>
+                        </div>
+                        <div class="immagine">
+                            <img src="${prodotto.immagine}" alt="prodotto">
+                        </div>
                     </div>
-                    <div class="immagine-destra">
-                        <img src="${item.immagine}" alt
+                `;
+            }
+        });
+
+        display.innerHTML = contenutoVuoto || "<p>Nessun risultato trovato.</p>";
+    }
+
+    // 3. FUNZIONE PER I BOTTONI
+    function cambiaCategoria(cat, elemento) {
+        categoriaSelezionata = cat;
+        
+        // Colora il bottone cliccato
+        const bottoni = document.getElementsByClassName('btn-filter');
+        for (let b of bottoni) { b.classList.remove('active'); }
+        elemento.classList.add('active');
+        
+        render();
+    }
+
+    function filtra() {
+        render();
+    }
+
+    // 4. AVVIO AUTOMATICO
+    render();
+</script>
+
+</body>
+</html>
